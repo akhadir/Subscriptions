@@ -1,0 +1,9 @@
+.order {
+  background-color: grey;
+  height: 30vh;
+  display: flex;
+  flex-direction: column;
+  margin: 1.5vh;
+  color: white;
+  text-align: left;
+}

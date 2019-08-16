@@ -1,0 +1,74 @@
+.subscription {
+  background-color: grey;
+  height: 53vh;
+  display: flex;
+  flex-direction: column;
+  margin: 1.5vh 1.5vh 0 1.5vh;
+  color: white;
+  text-align: left;
+  border-radius: 3px;
+}
+.subs-dialog label, 
+.subscription label {
+    display: block;
+}
+.subs-dialog select,
+.subscription select {
+    background: whitesmoke;
+    padding: 7px;
+}
+.subs-dialog input[type='number'],
+.subscription input[type='number'] {
+    max-width: 60px;
+}
+.subs-dialog .form-check-input,
+.subscription .form-check-input {
+    position: relative;
+    margin-left: 0.3rem;
+    width: 18px;
+    height: 18px;
+}
+.subscription .wrapper {
+    position: relative;
+    height: 100%;
+}
+.subscription .add-subs {
+    background: white;
+    height: calc(100% - 40px);
+}
+.subscription .add-subs button {
+    position: absolute;
+    top: 50%;
+    vertical-align: middle;
+    left: calc(50% - 80px);
+}
+.subscription .add-subs svg {
+    margin-top: -4px;
+}
+.subscription .header-icon {
+    position: absolute;
+    display: inline-block;
+    top: 3px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+.subs-dialog .form-check,
+.subscription .form-check {
+    display: inline-block;
+    padding-left: 0;
+    min-width: 43px;
+    text-align: center;
+    margin-right: 3px;
+}
+.subscription .accordion {
+    color: black;
+    position: absolute;
+    height: calc(100% - 50px);
+    width: calc(100% - 10px);
+    overflow: auto;
+}
+.subscription h6 {
+    height: 30px;
+    line-height: 30px;
+}

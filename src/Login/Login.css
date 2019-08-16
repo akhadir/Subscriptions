@@ -1,0 +1,10 @@
+.login {
+    padding: 10px;
+    color: white;
+    text-align: left;
+}
+.login input[type='submit'] {
+    margin-top: 30px;
+    background: blue;
+    color: white;
+}
