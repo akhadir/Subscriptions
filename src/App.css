@@ -7,7 +7,13 @@
 .wrapper{
   padding: 5px;
 }
-
+.App-header .amt {
+  display: inline-block;
+  position: absolute;
+  right: 10px;
+  top: 0;
+  line-height: 2.7rem;
+}
 footer,
 .App-header {
   min-height: 6vh;

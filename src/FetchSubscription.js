@@ -1,8 +1,9 @@
 import axios from 'axios';
 import querystring from 'query-string';
 const FetchSub = {
-    queryBaseURL: "/api/?db=epiz-24335607-milk&",
-    // queryBaseURL: "http://khadir.dx.am/api/?db=2461352-milk&",
+    // queryBaseURL: "/api/?db=epiz-24335607-milk&",
+    // queryBaseURL: "http://amruthamilk.epizy.com/api/?db=epiz-24335607-milk&",
+    queryBaseURL: "http://khadir.dx.am/api/?db=2461352-milk&",
     getUserDetails (data = null) {
         var promise = new Promise((resolve, reject) => {
             if (!data) {
@@ -16,8 +17,7 @@ const FetchSub = {
                         AxiosWrapper.get(url).then((resp) => {
                             let udata = resp.data;
                             if (udata && udata[0].Id) {
-                                jData.Id = udata[0].Id;
-                                window.localStorage.setItem("Milk.Subscriptions", JSON.stringify(jData));
+                                window.localStorage.setItem("Milk.Subscriptions", JSON.stringify(udata[0]));
                                 resolve(jData);
                             } else {
                                 resolve('');
@@ -50,6 +50,19 @@ const FetchSub = {
         var promise = new Promise((resolve, reject) => {
             Promise.all([FetchSub.getUserDetails(), FetchSub.getProductDetails()]).then((data) => {
                 resolve(data);
+            });
+        });
+        return promise;
+    },
+    getOrders (id, date) {
+        var promise = new Promise((resolve, reject) => {
+            let url = `${FetchSub.queryBaseURL}table=UserOrder&column=UserId&value=${id}&column1=Date&value1=${date}`;
+            console.log(url)
+            AxiosWrapper.get(url).then ((res) => {
+                if (!res['error']) {
+                    let data = res['data'];
+                    resolve(data);
+                }
             });
         });
         return promise;

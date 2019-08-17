@@ -5,12 +5,16 @@ import Subscription from "./Subscriptions/Subscription";
 import Order from "./Orders/Order";
 import Login from "./Login/Login";
 function App(props) {
+  const getOrders = (date) => {
+    let formattedDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    return props.getOrders(config.userData['Id'], formattedDate);
+  }
   function showWelcomePage(data: any) {
     config.userData = data[0];
     setConfig({
     ...config, content: (<>
       <Subscription products={data[1]} saveSubscription={saveSubscription} getSubscriptions={getSubscriptions} />
-      <Order />
+      <Order getOrders={getOrders} products={data[1]} />
     </>)
     });
   }
@@ -28,7 +32,7 @@ function App(props) {
   }
   const [config, setConfig] = useState({
       content: (<Spinner animation="border" />),
-      userData: null
+      userData: undefined
   });
   useEffect(() => {
     props.getUserProductDetails().then((data) => {
@@ -43,6 +47,7 @@ function App(props) {
     <div className="App">
       <header className="App-header">
         <label>Amrutha Milk</label>
+        {config.userData && <span className="amt">Cash: {config.userData.Amount}.0</span>}
       </header>
       <div className="body">{config.content}</div>
       <footer>

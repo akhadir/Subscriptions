@@ -1,9 +1,40 @@
 .order {
-  background-color: grey;
+  background-color:grey;
   height: 30vh;
   display: flex;
   flex-direction: column;
-  margin: 1.5vh;
+  margin: 1.5vh 1.5vh 0 1.5vh;
   color: white;
   text-align: left;
+  border-radius: 3px;
+}
+.order h6 {
+  height: 30px;
+  line-height: 30px;
+  background: grey;
+  color: white;
+}
+.order .wrapper {
+  position: relative
+}
+.order .header-ctrl {
+  background: white;
+  padding: 0;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: black;
+}
+
+.order .content {
+  background: white;
+  color: black;
+  height:  calc(30vh - 50px);
+  overflow: auto;
+  padding: 5px;
+  border-radius: 3px;
+}
+.order .message {
+  display: block;
+  text-align: center;
 }

@@ -6,7 +6,8 @@ import App from './App';
 // import * as serviceWorker from './serviceWorker';
 import FetchSub from "./FetchSubscription.js";
 
-ReactDOM.render(<App getUserProductDetails={FetchSub.getUserProductDetails} saveSubscription={FetchSub.saveSubscription}
+ReactDOM.render(<App getUserProductDetails={FetchSub.getUserProductDetails} 
+    saveSubscription={FetchSub.saveSubscription} getOrders={FetchSub.getOrders}
     getSubscriptions={FetchSub.getSubscriptions} register={FetchSub.register} />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
