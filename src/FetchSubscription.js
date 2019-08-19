@@ -54,10 +54,24 @@ const FetchSub = {
         });
         return promise;
     },
+    deleteSubscription(id) {
+        var promise = new Promise((resolve, reject) => {
+            let url = `${FetchSub.queryBaseURL}table=Subscription&column=Id&value=${id}`;
+            AxiosWrapper.delete(url).then((resp) => {
+                if (!resp['error']) {
+                    resolve(resp['data']);
+                } else {
+                    resolve('');
+                }
+            }).catch(() => {
+                resolve('');
+            });
+        });
+        return promise;
+    },
     getOrders (id, date) {
         var promise = new Promise((resolve, reject) => {
             let url = `${FetchSub.queryBaseURL}table=UserOrder&column=UserId&value=${id}&column1=Date&value1=${date}`;
-            console.log(url)
             AxiosWrapper.get(url).then ((res) => {
                 if (!res['error']) {
                     let data = res['data'];
@@ -101,11 +115,26 @@ const FetchSub = {
         var promise = new Promise((resolve, reject) => {
             data['Details'] = data['Details'].toString();
             let url = `${FetchSub.queryBaseURL}table=Subscription`;
-            AxiosWrapper.post(url, data).then ((res) => {
-                if (!res['error']) {
-                    resolve(res['data']);
+            if (!data['Id']) {
+                AxiosWrapper.post(url, data).then ((res) => {
+                    if (!res['error']) {
+                        resolve(res['data']);
+                    }
+                });
+            } else {
+                url += `&column=Id&value=${data['Id']}`;
+                if (!data['PausedFrom']) {
+                    data['PausedFrom'] = 'Null';
                 }
-            });
+                if (!data['PausedTo']) {
+                    data['PausedTo'] = 'Null';
+                }
+                AxiosWrapper.put(url, data).then ((res) => {
+                    if (!res['error']) {
+                        resolve(res['data']);
+                    }
+                });
+            }
         });
         return promise;
     },

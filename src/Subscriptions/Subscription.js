@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import { MdAddCircle } from 'react-icons/md';
 import { Button, Card, Accordion, Modal, Spinner } from 'react-bootstrap';
 import './Subscription.css';
@@ -10,15 +10,23 @@ function Subscription(props) {
         Details: [],
         Quantity: 1
     }
-    const saveSubscription = () => {
-        props.saveSubscription(subscriptionData).then((data) => {
-            if (data === '') {
-                setConfig({
-                    content: (<Spinner animation="border" />),
-                    modal: ''
-                });
-            }
+    const deleteSubscription = useCallback((id) => {
+        return props.deleteSubscription(id).then(() => {
+            setConfig({...config,
+                content: (<Spinner animation="border" />)
+            });
+            getSubscriptions();
         });
+    }, [])
+    const saveSubscription = (sdata = null) => {
+        if (!sdata || sdata.target) {
+            sdata = subscriptionData;
+            setConfig({
+                content: (<Spinner animation="border" />),
+                modal: ''
+            });
+        }
+        props.saveSubscription(sdata);
     }
     const [config, setConfig] = useState({
         content: (<Spinner animation="border" />),
@@ -33,7 +41,7 @@ function Subscription(props) {
             <Modal.Title>Add Subscription</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <SubscriptionForm products={props.products} subscriptionData={subscriptionData} />
+                <SubscriptionForm products={props.products} deleteSubscription={deleteSubscription} subscriptionData={subscriptionData} />
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>Close</Button>
@@ -74,7 +82,7 @@ function Subscription(props) {
                             <Accordion.Toggle as={Card.Header} eventKey={index}>{index + 1}. {getProductName(item.ProductId, props.products)}</Accordion.Toggle>
                             <Accordion.Collapse eventKey={index}>
                                 <Card.Body>
-                                    <SubscriptionForm products={props.products} subscriptionData={item} />
+                                    <SubscriptionForm saveSubscription={saveSubscription} products={props.products} deleteSubscription={deleteSubscription} subscriptionData={item} />
                                 </Card.Body>
                             </Accordion.Collapse>
                         </Card>);

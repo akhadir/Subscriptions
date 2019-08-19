@@ -1,95 +1,119 @@
 import React, {useState, useEffect} from 'react';
-import {Spinner, Table } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import './Order.css';
 import DatePicker from 'react-date-picker';
+import { OrderDetail } from './OrderDetail';
 
 function Order(props) {
-  let [config, setConfig] = useState({
-    date: new Date(),
-    content: (<Spinner animation="border" />)
-  });
-  const handleChange = (e) => {
-    if (e) {
-      setConfig({...config, date: e});
-    }
-  }
-  useEffect(() => {
-    props.getOrders(config.date).then((data) => {
-      let content;
-      if (data.length) {
-        let total = data.map((item) => {
-          return parseInt(item.Total, 10);
-        }).reduce((total, num) => {
-          return total + num;
-        });
-        content = (<div className="content">
-          <OrderDetail data={data} total={total} products={props.products} />
-        </div>);
-      } else {
-        content = (<div className="content">
-          <span className="message">No orders found</span>
-        </div>);
-      }
-      setConfig({...config, content: content})
+    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    let [config, setConfig] = useState({
+        date: props.startDate,
+        subscriptionData: null,
+        content: (<Spinner animation="border" />)
     });
-  }, [config.date])
-  return (
-    <div className="order">
+    props.refresh(() => {
+        setConfig({...config, subscriptionData: null, content: (<Spinner animation="border" />)});
+    })
+    const handleChange = (e) => {
+        if (e) {
+            setConfig({...config, date: e});
+        }
+    }
+    const setOrderFromSubs = () => {
+        if (!config.subscriptionData) {
+            props.getSubscriptions().then ((data) => {
+                config.subscriptionData = data;
+                setOrder(data);
+            });
+        } else {
+            setOrder(config.subscriptionData);
+        }
+    }
+    const setContent = () => {
+      if (config.date <= (new Date())) {
+        props.getOrders(config.date).then((data) => {
+          let content;
+          if (data.length) {
+              let total = data.map((item) => {
+                return parseInt(item.Total, 10);
+              }).reduce((total, num) => {
+                return total + num;
+              });
+              content = (<div className="content">
+                <OrderDetail data={data} total={total} products={props.products} />
+              </div>);
+          } else {
+              content = (<div className="content">
+                <span className="message">No orders found.</span>
+              </div>);
+          }
+          setConfig({...config, content: content});
+        });
+      } else {
+          setOrderFromSubs();
+      }
+    }
+    useEffect(() => {
+        setContent();
+    }, [config.date, config.subscriptionData]);
+    return (
+        <div className="order">
             <div className="wrapper">
                 <h6>Orders</h6>
-                <span className="header-ctrl"><DatePicker id="example-datepicker" value={config.date} onChange={handleChange} /></span>
+                <span className="header-ctrl">
+                    <DatePicker id="order-datepicker" clearIcon={null} value={config.date} onChange={handleChange} />
+                </span>
                 {config.content}
             </div>
         </div>
-  );
-}
-const OrderDetail = (props) => {
-    let data = props.data;
-    const getProductName = (id) => {
-        let name = '';
-        let products = props.products;
-        let len = products.length;
-        let i;
-        for (i = 0; i < len; i++) {
-          let item = products[i];
-          if (item.Id == id) {
-            name = item.Name;
-            break;
+    );
+
+    function setOrder(data: any) {
+        let mdata = data.filter((item) => {
+          let out = false;
+          let date = config.date;
+          if (item.PausedFrom === null || item.PausedTo === null ||
+            item.PausedFrom === '0000-00-00 00:00:00' || item.PausedTo === '0000-00-00 00:00:00' ||
+            date < new Date(item.PausedFrom) ||
+            date > new Date(item.PausedTo)) {
+            switch (item.Type) {
+                case 'W':
+                  let weekDay = weekDays[date.getDay()];
+                  if (item.Details.indexOf(weekDay) > -1) {
+                    out = true;
+                  }
+                  break;
+                case 'M':
+                  let today = date.getDate();
+                  date.setDate(date.getDate() + 1);
+                  let tomorrow = date.getDate();
+                  if ((item.Details.indexOf('FD') > -1 && today === 1) ||
+                    (item.Details.indexOf('LD') > -1 && tomorrow === 1)) {
+                    out = true;
+                  }
+                  date.setDate(date.getDate() - 1);
+                  break;
+                case 'D':
+                default:
+                    out = true;
+                    break;
+              }
           }
+          return out;
+        });
+        let content;
+        if (mdata.length) {
+            content = (<div className="content">
+              <OrderDetail data={mdata} total={undefined} products={props.products} />
+            </div>);
         }
-        return name;
+        else {
+            content = (<div className="content">
+              <span className="message">No orders found.</span>
+            </div>);
+        }
+        
+        setConfig({ ...config, content: content });
     }
-    return (
-      <>
-      <div>Order #: {data[0]['OrderId']}</div>
-      <Table size="sm" striped bordered hover >
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => {
-            return (
-              <tr>
-                <td>{index + 1}</td>
-                <td>{getProductName(item.ProductId)}</td>
-                <td>{item.Quantity}</td>
-                <td>{item.Total}</td>
-              </tr>
-            )
-          })}
-          <tr>
-            <td colspan="2"> </td>
-            <td>Total</td>
-            <td>{props.total}</td>
-          </tr>
-        </tbody>
-      </Table>
-    </>
-    )
 }
 export default Order;

@@ -72,3 +72,17 @@
     height: 30px;
     line-height: 30px;
 }
+.subscription .sub-ctrl {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    font-size: 25px;
+    width: 50%;
+    text-align: right;
+    color: rgb(10, 117, 240);
+}
+.subscription .sub-ctrl svg {
+    display: inline-block;
+    margin-left: 10px;
+    cursor: pointer;
+}
